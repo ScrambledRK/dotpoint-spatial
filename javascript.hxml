@@ -1,0 +1,20 @@
+-cp ..\dotpoint-library\source\main\haxe
+-cp ..\dotpoint-library\source\main\js
+-cp source\main\haxe
+-cp source\main\js
+-D analyzer-optimize
+--each
+
+# library
+--macro "include('at.dotpoint')"
+-dce no
+-js output\javascript\spatial.js
+#--next
+
+# test
+#-cp source\test\haxe
+#-main at.dotpoint.Main
+#-debug
+#-lib utest
+#-js output\javascript\test.js
+#-cmd node .\output\javascript\test.js
