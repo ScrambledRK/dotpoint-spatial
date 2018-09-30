@@ -1,9 +1,5 @@
 package at.dotpoint.display;
 
-import at.dotpoint.exception.UnsupportedMethodException;
-import at.dotpoint.spatial.bounds.AABBContainer;
-import at.dotpoint.spatial.transform.Transform;
-import at.dotpoint.display.renderable.ADisplayEntity;
 import at.dotpoint.datastructure.entity.AEntity;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
 import at.dotpoint.datastructure.entity.event.SignalType;
@@ -29,6 +25,9 @@ class Stage extends AEntity
 
     @:isVar public var scaleMode(get,set):ScaleMode;
     @:isVar public var stageSize(get,set):Rectangle;
+    
+    //
+    public var onEnterFrame:Void->Void;
 
     //
     public function new( container:DivElement, numLayer:Int = 1 )
@@ -92,6 +91,9 @@ class Stage extends AEntity
         {
             case ViewportSignal.TICK:
             {
+                if( this.onEnterFrame != null )
+                    this.onEnterFrame();
+                
                 for( layer in layers )
                     layer.render();
             }
