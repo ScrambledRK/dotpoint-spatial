@@ -1,7 +1,9 @@
 package at.dotpoint.display.renderable;
 
+import at.dotpoint.datastructure.entity.event.ComponentType;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
-import at.dotpoint.display.renderable.IDisplayEntity.IDisplayObject;
+import at.dotpoint.display.renderable.IRenderable.RenderableSignal;
+import at.dotpoint.display.renderable.IRenderable.RenderableType;
 import at.dotpoint.display.rendering.RenderLayer;
 import at.dotpoint.exception.UnsupportedMethodException;
 import at.dotpoint.math.geometry.Rectangle;
@@ -11,20 +13,22 @@ import js.html.CanvasRenderingContext2D;
 /**
  * 
  */
-class ARenderable extends ADisplayComponent<IDisplayObject> implements IRenderable
+class ARenderable extends DisplayComponent implements IRenderable
 {
 
     @:isVar public var depth(get,set):Int = 0;
     @:isVar public var enabled(get,set):Bool = true;
 
-
     private var isRenderingDirty:Bool;
     private var dirtyRegion:Rectangle;
 
     //
-    public function new()
+    public function new( ?type:ComponentType )
     {
-        super( null );
+        if( type == null )
+            type = RenderableType.CANVAS;
+
+        super( type );
 
         this.dirtyRegion = new Rectangle();
         this.isRenderingDirty = true;
@@ -33,26 +37,6 @@ class ARenderable extends ADisplayComponent<IDisplayObject> implements IRenderab
     // ************************************************************************ //
     // Methods
     // ************************************************************************ //
-
-    //
-    override private function set_entity( value:IDisplayObject ):IDisplayObject
-    {
-        super.set_entity( value );
-
-        if( this.entity != null )
-            this.initialize();
-
-        return value;
-    }
-
-    //
-    private function initialize():Void
-    {
-        //;
-    }
-
-    // ------------------------------------------------------------------------ //
-    // ------------------------------------------------------------------------ //
 
     //
     private function get_enabled( ):Bool return this.enabled;
@@ -66,7 +50,7 @@ class ARenderable extends ADisplayComponent<IDisplayObject> implements IRenderab
     private function set_depth( value:Int ):Int
     {
         if( value != this.depth ){
-            this.entity.onComponentSignal( RenderableSignal.DEPTH_CHANGED, SignalPropagation.NONE );
+            this.dispatch( RenderableSignal.DEPTH_CHANGED, SignalPropagation.NONE );
         }
 
         return this.depth = value;

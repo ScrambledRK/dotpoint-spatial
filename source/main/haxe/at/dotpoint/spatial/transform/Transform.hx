@@ -1,16 +1,18 @@
 package at.dotpoint.spatial.transform;
 
-import at.dotpoint.math.BasicMath;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
 import at.dotpoint.exception.UnsupportedMethodException;
+import at.dotpoint.math.BasicMath;
 import at.dotpoint.math.Space;
 import at.dotpoint.math.tensor.Matrix3;
 import at.dotpoint.math.tensor.Vector2;
+import at.dotpoint.spatial.transform.ITransform.TransformSignal;
+import at.dotpoint.spatial.transform.ITransform.TransformType;
 
 /**
  *
  */
-class Transform extends ASpatialComponent<ISpatialEntity<Dynamic>> implements ITransform
+class Transform extends SpatialComponent implements ITransform
 {
 
     private var local:Matrix3;
@@ -27,9 +29,9 @@ class Transform extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IT
     // ************************************************************************ //
 
     //
-    public function new( entity:ISpatialEntity<Dynamic> )
+    public function new()
     {
-        super( entity );
+        super( TransformType.TRANSFORM );
 
         this.local = new Matrix3();
         this.world = new Matrix3();
@@ -47,7 +49,7 @@ class Transform extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IT
      */
     private function notify():Void
     {
-        this.entity.onComponentSignal( TransformSignal.CHANGED, SignalPropagation.NONE );
+        this.dispatch( TransformSignal.CHANGED, SignalPropagation.NONE );
 
         if( this.isWorldDirty && this.isLocalDirty )
             throw "both world and local matrix are dirty, cannot compute, error error";
@@ -145,8 +147,10 @@ class Transform extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IT
     private inline function get_x( ):Float { return local.m31; }
     private inline function set_x( value:Float ):Float
     {
-        if( !BasicMath.equals( local.m31, value ) )
+        if( !BasicMath.equals( local.m31, value ) ){
             this.isWorldDirty = true;
+            this.notify();
+        }
 
         return local.m31 = value;
     }
@@ -155,8 +159,10 @@ class Transform extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IT
     private inline function get_y( ):Float { return local.m32; }
     private inline function set_y( value:Float ):Float
     {
-        if( !BasicMath.equals( local.m32, value ) )
+        if( !BasicMath.equals( local.m32, value ) ) {
             this.isWorldDirty = true;
+            this.notify();
+        }
 
         return local.m32 = value;
     }

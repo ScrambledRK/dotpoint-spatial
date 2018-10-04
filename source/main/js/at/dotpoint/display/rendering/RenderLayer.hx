@@ -1,23 +1,21 @@
 package at.dotpoint.display.rendering;
 
-import at.dotpoint.datastructure.entity.hierarchy.TreeIterator;
+import at.dotpoint.datastructure.entity.event.ComponentType;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
-import at.dotpoint.spatial.bounds.AABBContainer;
-import at.dotpoint.spatial.transform.Transform;
-import at.dotpoint.datastructure.entity.hierarchy.TreeContainer;
-import at.dotpoint.display.renderable.NullRenderable;
-import at.dotpoint.display.renderable.IDisplayEntity.IDisplayObject;
-import at.dotpoint.display.renderable.ADisplayEntity;
+import at.dotpoint.datastructure.entity.event.SignalType;
+import at.dotpoint.datastructure.entity.hierarchy.TreeSignal;
+import at.dotpoint.display.renderable.IRenderable.RenderableSignal;
 import at.dotpoint.math.geometry.Rectangle;
 import at.dotpoint.math.Space;
 import at.dotpoint.math.tensor.Matrix3;
+import at.dotpoint.spatial.entity.SpatialEntity.SpatialContainer;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 
 /**
  *
  */
-class RenderLayer extends DisplayContainer
+class RenderLayer extends SpatialContainer
 {
 
     //
@@ -29,7 +27,7 @@ class RenderLayer extends DisplayContainer
     public var context(default,null):CanvasRenderingContext2D;
 
     //
-    private var renderList:Array<IDisplayObject>;
+    private var renderList:Array<IDisplayBundle>;
     private var isRenderListDirty:Bool;
 
     // ************************************************************************ //
@@ -45,7 +43,9 @@ class RenderLayer extends DisplayContainer
         this.canvas = js.Browser.document.createCanvasElement();
         this.context = canvas.getContext2d();
 
+        this.renderList = new Array<IDisplayBundle>();
         this.dirtyRegions = new Array<Rectangle>();
+
         this.isRenderListDirty = true;
     }
 
@@ -72,15 +72,42 @@ class RenderLayer extends DisplayContainer
     // ------------------------------------------------------------------------ //
 
     //
-    override private function onHierarchyChanged( signal:SignalPropagation ):Void
+    public function addRenderItem( display:IDisplayBundle ):Void
     {
-        this.isRenderListDirty = true;   // entity got added/removed
+        if( this.renderList.indexOf( display ) != -1 )
+            throw "render item already on layer";
+
+        this.renderList.push( display );
+        this.isRenderListDirty = true;
     }
 
     //
-    override private function onRenderableChanged( signal:SignalPropagation ):Void
+    public function removeRenderItem( display:IDisplayBundle ):Void
     {
-        this.isRenderListDirty = true;   // z-order changed
+        var index = this.renderList.indexOf( display );
+
+        if( index == -1 )
+            throw "render item not on layer";
+
+        this.renderList.splice( index, 1 );
+    }
+
+    // ------------------------------------------------------------------------ //
+    // ------------------------------------------------------------------------ //
+
+    //
+    override public function onComponentSignal( origin:ComponentType, signal:SignalType, phase:SignalPropagation ):Void
+    {
+        super.onComponentSignal( origin, signal, phase );
+
+        switch( signal )
+        {
+            case TreeSignal.CHANGED:
+                this.isRenderListDirty = true;   // entity got added/removed
+
+            case RenderableSignal.DEPTH_CHANGED:
+                this.isRenderListDirty = true;
+        }
     }
 
     // ************************************************************************ //
@@ -124,16 +151,8 @@ class RenderLayer extends DisplayContainer
 
         //
         this.isRenderListDirty = false;
-        this.renderList = new Array<IDisplayObject>();
 
-        for( child in new TreeIterator<IDisplayObject>( this.spatial ) )
-        {
-            if( child.renderable.enabled )
-                this.renderList.push( child );
-        }
-
-        //
-        this.renderList.sort( function( a:IDisplayObject, b:IDisplayObject ):Int {
+        this.renderList.sort( function( a:IDisplayBundle, b:IDisplayBundle ):Int {
              return a.renderable.depth - b.renderable.depth;
         });
     }

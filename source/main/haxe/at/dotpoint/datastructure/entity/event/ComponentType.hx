@@ -3,7 +3,7 @@ package at.dotpoint.datastructure.entity.event;
 /**
  * 
  */
-abstract SignalType(Int) to Int
+abstract ComponentType(Int) to Int
 {
 
     //
@@ -12,7 +12,7 @@ abstract SignalType(Int) to Int
         this = HashId.generate();
 
         #if debug
-            HashId.register( "SignalType", hash, this );
+            HashId.register( "ComponentType", hash, this );
         #end
     }
 

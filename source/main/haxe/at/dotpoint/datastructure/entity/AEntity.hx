@@ -1,52 +1,44 @@
 package at.dotpoint.datastructure.entity;
 
-import at.dotpoint.datastructure.entity.event.SignalPropagation;
-import at.dotpoint.datastructure.entity.event.SignalType;
-import at.dotpoint.exception.UnsupportedMethodException;
+import at.dotpoint.datastructure.entity.IComponent.IComponentBundle;
 
 /**
  *
  */
-class AEntity implements IEntity
+class AEntity
 {
 
     //
-    @:isVar public var name(get,set):String;
-    @:isVar public var alive(get,set):Bool;
+    public var name:String;
 
     //
     public function new( ?name:String )
     {
         this.name = name;
-        this.alive = true;
-    }
-
-    // ************************************************************************ //
-    // Methods
-    // ************************************************************************ //
-
-    //
-    private function get_name( ):String { return name; }
-    private function set_name( value:String ):String
-    {
-        return this.name = value;
-    }
-
-    //
-    private function get_alive( ):Bool { return this.alive; }
-    private function set_alive( value:Bool ):Bool
-    {
-        return this.alive = value;
     }
 
     // ------------------------------------------------------------------------ //
     // ------------------------------------------------------------------------ //
 
     //
-    public function onComponentSignal( signal:SignalType, type:SignalPropagation ):Void
+    private function bindBundle( bundle:IComponentBundle, entity:IEntity ):Void
     {
-        throw new UnsupportedMethodException();
+        if( bundle.entity != entity )
+            bundle.entity = entity;
+
+        for( component in bundle.getComponents() )
+            this.bindComponent( component, entity );
     }
+
+    //
+    private function bindComponent( component:IComponent, entity:IEntity ):Void
+    {
+        if( component.entity != entity )
+            component.entity = entity;
+    }
+
+    // ------------------------------------------------------------------------ //
+    // ------------------------------------------------------------------------ //
 
     //
     public function toString()

@@ -1,14 +1,15 @@
 package at.dotpoint.datastructure.entity.hierarchy;
 
+import at.dotpoint.datastructure.entity.IComponent.IComponentBundle;
+import at.dotpoint.datastructure.graph.TreeTraversal;
 import at.dotpoint.datastructure.iterator.DynamicTreeIterator;
 import at.dotpoint.datastructure.iterator.IResetIterator;
 import at.dotpoint.datastructure.iterator.TransformIterator;
-import at.dotpoint.datastructure.graph.TreeTraversal;
 
 /**
  *
  */
-class TreeIterator<T:IEntity> implements IResetIterator<T>
+class TreeIterator<T:IComponentBundle> implements IResetIterator<T>
 {
 
     //
@@ -23,7 +24,7 @@ class TreeIterator<T:IEntity> implements IResetIterator<T>
     public function new( node:ITreeComponent<T>, ?type:TreeTraversal )
     {
         this.tree = new DynamicTreeIterator<ITreeComponent<T>>( node, type, this.getChildren );
-        this.transform = new TransformIterator( this.tree, this.toEntity );
+        this.transform = new TransformIterator( this.tree, this.toBundle );
     }
 
     //
@@ -64,8 +65,8 @@ class TreeIterator<T:IEntity> implements IResetIterator<T>
     }
 
     //
-    private function toEntity( node:ITreeComponent<T> ):T
+    private function toBundle( node:ITreeComponent<T> ):T
     {
-        return node.entity;
+        return node.getValue();
     }
 }

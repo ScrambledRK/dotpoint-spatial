@@ -5,5 +5,5 @@ import at.dotpoint.datastructure.entity.event.SignalType;
 //
 class TreeSignal
 {
-    public static var CHANGED(default,never):SignalType = "Tree.CHANGED";
+    public static var CHANGED(default,never):SignalType = new SignalType("Tree.CHANGED");
 }

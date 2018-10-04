@@ -1,12 +1,13 @@
 package at.dotpoint.display.renderable;
 
-import at.dotpoint.display.renderable.IDisplayEntity.IDisplayObject;
+import at.dotpoint.datastructure.entity.event.ComponentType;
+import at.dotpoint.display.renderable.IRenderable.RenderableType;
 import at.dotpoint.display.rendering.RenderLayer;
 
 /**
  *
  */
-class NullRenderable extends ADisplayComponent<IDisplayObject> implements IRenderable
+class NullRenderable extends DisplayComponent implements IRenderable
 {
 
     //
@@ -14,9 +15,12 @@ class NullRenderable extends ADisplayComponent<IDisplayObject> implements IRende
     public var enabled(get,set):Bool;
 
     //
-    public function new()
+    public function new( ?type:ComponentType )
     {
-        super( null );       
+        if( type == null )
+            type = RenderableType.CANVAS;
+
+        super( type );
     }
 
     // ------------------------------------------------------------------------ //

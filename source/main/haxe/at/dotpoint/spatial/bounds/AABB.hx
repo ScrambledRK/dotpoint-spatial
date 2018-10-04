@@ -1,7 +1,7 @@
 package at.dotpoint.spatial.bounds;
 
-import at.dotpoint.math.BasicMath;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
+import at.dotpoint.math.BasicMath;
 import at.dotpoint.math.geometry.Rectangle;
 import at.dotpoint.math.Space;
 import at.dotpoint.math.tensor.Matrix3;
@@ -10,7 +10,7 @@ import at.dotpoint.spatial.bounds.IBoundings;
 /**
  *
  */
-class AABB extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IBoundings
+class AABB extends SpatialComponent implements IBoundings
 {
 
     private var model:Rectangle;
@@ -24,9 +24,9 @@ class AABB extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IBoundi
     public var height(get,set):Float;
 
     //
-    public function new( entity:ISpatialEntity<Dynamic> )
+    public function new()
     {
-        super( entity );
+        super( BoundingsType.AABB );
 
         this.model = new Rectangle();
         this.local = new Rectangle();
@@ -45,7 +45,7 @@ class AABB extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IBoundi
      */
     private function notify():Void
     {
-        this.entity.onComponentSignal( BoundingsSignal.CHANGED, SignalPropagation.NONE );
+        this.dispatch( BoundingsSignal.CHANGED, SignalPropagation.NONE );
     }
 
     //
@@ -144,7 +144,11 @@ class AABB extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IBoundi
     private inline function set_width( value:Float ):Float
     {
         if( !BasicMath.equals( model.width, value ) )
+        {
+            this.isLocalDirty = true;
             this.isWorldDirty = true;
+            this.notify();
+        }
 
         return model.width = value;
     }
@@ -154,7 +158,11 @@ class AABB extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IBoundi
     private inline function set_height( value:Float ):Float
     {
         if( !BasicMath.equals( model.height, value ) )
+        {
+            this.isLocalDirty = true;
             this.isWorldDirty = true;
+            this.notify();
+        }
 
         return model.height = value;
     }

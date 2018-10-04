@@ -1,17 +1,7 @@
-package at.dotpoint.display;
+package at.dotpoint.display.renderable;
 
 import at.dotpoint.datastructure.image.Bitmap;
-import at.dotpoint.display.renderable.ADisplayEntity.ADisplayObject;
-import at.dotpoint.display.renderable.ARenderable;
 import js.html.CanvasRenderingContext2D;
-
-//
-class Image extends ADisplayObject
-{
-    public function new( src:Bitmap, ?name:String ) {
-        super( new ImageRenderable(src), name );
-    }
-}
 
 /**
  *

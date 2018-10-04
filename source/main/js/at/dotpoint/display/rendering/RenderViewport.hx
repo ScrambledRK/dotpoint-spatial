@@ -1,8 +1,11 @@
 package at.dotpoint.display.rendering;
 
-import at.dotpoint.math.geometry.Rectangle;
 import at.dotpoint.datastructure.entity.AComponent;
+import at.dotpoint.datastructure.entity.event.ComponentType;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
+import at.dotpoint.display.rendering.IRenderViewport.RenderViewportSignal;
+import at.dotpoint.display.rendering.IRenderViewport.RenderViewportType;
+import at.dotpoint.math.geometry.Rectangle;
 import js.html.DivElement;
 import js.html.DOMRect;
 import js.html.Window;
@@ -10,7 +13,7 @@ import js.html.Window;
 /**
  *
  */
-class RenderViewport extends AComponent<Stage>
+class RenderViewport extends AComponent<IRenderBundle> implements IRenderViewport
 {
 
     public var window(default, null):Window;
@@ -22,9 +25,12 @@ class RenderViewport extends AComponent<Stage>
     // ************************************************************************ //
 
     //
-    public function new( entity:Stage, container:DivElement )
+    public function new( container:DivElement, ?type:ComponentType )
     {
-        super( entity );
+        if( type == null )
+            type = RenderViewportType.CANVAS;
+
+        super( type );
 
         this.window = js.Browser.window;
         this.container = container;
@@ -41,7 +47,7 @@ class RenderViewport extends AComponent<Stage>
     private function onAnimationFrame( delta:Float ):Void
     {
         this.checkDimension();
-        this.entity.onComponentSignal( ViewportSignal.TICK, SignalPropagation.NONE );
+        this.dispatch( RenderViewportSignal.TICK, SignalPropagation.NONE );
 
         this.window.requestAnimationFrame( this.onAnimationFrame );
     }
@@ -64,7 +70,7 @@ class RenderViewport extends AComponent<Stage>
             boundings.width = w;
             boundings.height = h;
 
-            this.entity.onComponentSignal( ViewportSignal.RESIZE, SignalPropagation.NONE );
+            this.dispatch( RenderViewportSignal.RESIZE, SignalPropagation.NONE );
         }
     }
 

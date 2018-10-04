@@ -3,11 +3,12 @@ package at.dotpoint.spatial.bounds;
 import at.dotpoint.exception.UnsupportedMethodException;
 import at.dotpoint.math.geometry.Rectangle;
 import at.dotpoint.math.Space;
+import at.dotpoint.spatial.bounds.IBoundings.BoundingsType;
 
 /**
  * 
  */
-class AABBContainer extends ASpatialComponent<ISpatialEntity<Dynamic>> implements IBoundings
+class AABBContainer extends SpatialComponent implements IBoundings
 {
 
     private var local:Rectangle;
@@ -20,9 +21,9 @@ class AABBContainer extends ASpatialComponent<ISpatialEntity<Dynamic>> implement
     public var height(get,set):Float;
 
     //
-    public function new( entity:ISpatialEntity<Dynamic> )
+    public function new()
     {
-        super( entity );
+        super( BoundingsType.AABB );
 
         this.local = new Rectangle();
         this.world = new Rectangle();

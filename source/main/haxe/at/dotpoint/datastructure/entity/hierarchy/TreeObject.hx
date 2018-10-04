@@ -1,14 +1,16 @@
 package at.dotpoint.datastructure.entity.hierarchy;
 
 import at.dotpoint.datastructure.entity.AComponent;
+import at.dotpoint.datastructure.entity.event.ComponentType;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
 import at.dotpoint.datastructure.entity.event.SignalType;
+import at.dotpoint.datastructure.entity.IComponent.IComponentBundle;
 import at.dotpoint.exception.UnsupportedMethodException;
 
 /**
  *
  */
-@:generic class TreeObject<T:IEntity> extends AComponent<T> implements ITreeComponent<T>
+class TreeObject<T:IComponentBundle> extends AComponent<T> implements ITreeComponent<T>
 {
 
     @:isVar public var parent(get,set):ITreeComponent<T>;
@@ -19,9 +21,9 @@ import at.dotpoint.exception.UnsupportedMethodException;
     // ************************************************************************ //
 
     //
-    public function new( entity:T )
+    public function new( type:ComponentType )
     {
-        super( entity );
+        super( type );
 
         this.parent = null;
         this.children = new Array<ITreeComponent<T>>();
@@ -30,6 +32,12 @@ import at.dotpoint.exception.UnsupportedMethodException;
     // ************************************************************************ //
     // getter / setter
     // ************************************************************************ //
+
+    //
+    public function getValue():T
+    {
+        return this.bundle;
+    }
 
     //
     private function get_parent( ):ITreeComponent<T> return this.parent;
@@ -64,19 +72,19 @@ import at.dotpoint.exception.UnsupportedMethodException;
     }
 
     //
-    public function dispatch( signal:SignalType, type:SignalPropagation ):Void
+    override public function dispatch( signal:SignalType, phase:SignalPropagation ):Void
     {
-        switch( type )
+        switch( phase )
         {
             case SignalPropagation.NONE:
-                this.entity.onComponentSignal( signal, type );
+                this.entity.onComponentSignal( this.type, signal, phase );
 
             case SignalPropagation.CHILDREN:
             {
                 for( child in this.children )
                 {
-                    child.entity.onComponentSignal( signal, type );
-                    child.dispatch( signal, type );
+                    child.entity.onComponentSignal( this.type, signal, phase );
+                    child.dispatch( signal, phase );
                 }
             }
 
@@ -84,8 +92,8 @@ import at.dotpoint.exception.UnsupportedMethodException;
             {
                 if( this.parent != null )
                 {
-                    this.parent.entity.onComponentSignal( signal, type );
-                    this.parent.dispatch( signal, type );
+                    this.parent.entity.onComponentSignal( this.type, signal, phase );
+                    this.parent.dispatch( signal, phase );
                 }
             }
         }

@@ -1,11 +1,13 @@
 package at.dotpoint.datastructure.entity.hierarchy;
 
+import at.dotpoint.datastructure.entity.event.ComponentType;
+import at.dotpoint.datastructure.entity.IComponent.IComponentBundle;
 import at.dotpoint.exception.RuntimeException;
 
 /**
  *
  */
-class TreeContainer<T:IEntity> extends TreeObject<T>
+class TreeContainer<T:IComponentBundle> extends TreeObject<T>
 {
 
     // ************************************************************************ //
@@ -13,9 +15,9 @@ class TreeContainer<T:IEntity> extends TreeObject<T>
     // ************************************************************************ //
 
     //
-    public function new( entity:T )
+    public function new( type:ComponentType )
     {
-        super( entity );
+        super( type );
     }
 
     // ************************************************************************ //

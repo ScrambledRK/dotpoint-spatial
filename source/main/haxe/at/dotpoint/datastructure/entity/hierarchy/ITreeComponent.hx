@@ -1,11 +1,14 @@
 package at.dotpoint.datastructure.entity.hierarchy;
 
-import at.dotpoint.datastructure.entity.event.SignalType;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
+import at.dotpoint.datastructure.entity.event.SignalType;
+import at.dotpoint.datastructure.entity.IComponent.IComponentBundle;
 
 //
-interface ITreeComponent<T:IEntity> extends IComponent<T> extends ITreeDispatcher
+interface ITreeComponent<T:IComponentBundle> extends IComponent extends ITreeDispatcher
 {
+    public function getValue():T;
+
     public var parent(get,set):ITreeComponent<T>;
     public var children(get,set):Array<ITreeComponent<T>>;
 
