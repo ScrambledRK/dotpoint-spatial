@@ -1,5 +1,6 @@
 package at.dotpoint.spatial.entity;
 
+import at.dotpoint.datastructure.graph.TreeTraversal;
 import at.dotpoint.datastructure.entity.AEntity;
 import at.dotpoint.datastructure.entity.event.ComponentType;
 import at.dotpoint.datastructure.entity.event.SignalPropagation;
@@ -21,10 +22,9 @@ class SpatialContainer extends SpatialEntity
     public function new( ?name:String ) super( SpatialBundleType.CONTAINER, name );
 
     //
-    public var children(get,never):IResetIterator<ISpatialBundle>;
-    inline private function get_children():IResetIterator<ISpatialBundle>
+    public function children( ?traversal:TreeTraversal ):IResetIterator<ISpatialBundle>
     {
-        return this.spatial.children;
+        return this.spatial.children( traversal );
     }
 
     //

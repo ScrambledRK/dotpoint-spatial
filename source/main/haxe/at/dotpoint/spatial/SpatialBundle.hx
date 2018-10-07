@@ -248,7 +248,6 @@ class SpatialBundle extends AComponentBundle implements ISpatialBundle
 
     //
     public var parent(get,never):ISpatialBundle;
-    public var children(get,never):IResetIterator<ISpatialBundle>;
 
     // ------------------------------------------------------------------------ //
     // ------------------------------------------------------------------------ //
@@ -301,9 +300,12 @@ class SpatialBundle extends AComponentBundle implements ISpatialBundle
     }
 
     //
-    inline private function get_children():IResetIterator<ISpatialBundle>
+    public function children( ?traversal:TreeTraversal ):IResetIterator<ISpatialBundle>
     {
-        return new TreeIterator<ISpatialBundle>( this.hierarchy, TreeTraversal.IMMEDIATE_ONLY );
+        if( traversal == null )
+            traversal = TreeTraversal.IMMEDIATE_ONLY;
+
+        return new TreeIterator<ISpatialBundle>( this.hierarchy, traversal );
     }
 
 }
